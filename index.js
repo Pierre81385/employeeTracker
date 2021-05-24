@@ -12,8 +12,8 @@ var connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) {
-    throw err;
     console.log(err);
+    throw err;
   } else {
     start();
   }
@@ -70,42 +70,112 @@ function start() {
 
 //add department function
 function addDepartment() {
-  console.log("add department function called");
-  start();
+  //console.log("add department function called");
+
+  inquirer
+    .prompt({
+      type: "input",
+      message: "Enter department name:",
+      name: "newDepartment",
+    })
+    .then((res) => {
+      connection.query("INSERT INTO department SET ?", {
+        name: res.newDepartment,
+      });
+
+      console.log("Department added");
+
+      start();
+    });
 }
 
 //add role function
 function addRole() {
-  console.log("add role function called");
-  start();
+  //console.log("add role function called");
+
+  inquirer
+    .prompt(
+      {
+        type: "input",
+        message: "Enter job title:",
+        name: "newTitle",
+      },
+      {
+        type: "input",
+        message: "Enter annual salary:",
+        name: "newSalary",
+      },
+      {
+        type: "list",
+        message: "Enter department:",
+        name: "dept",
+        choices: function () {
+          //store current list of departments in this array
+          var departmentArray = [];
+
+          //push each value from the name column of the department into departmentArray which will populate list choices.
+          for (var i = 0; i < response.length; i++) {
+            departmentArray.push(response[i].name);
+          }
+
+          return departmentArray;
+        },
+      }
+    )
+    .then((res) => {
+      var dept;
+      for (var i = 0; i < response.length; i++) {
+        if (response[i].name === res.dept) {
+          dept = response[i].id;
+        }
+      }
+      connection.query("INSERT INTO role SET ?", {
+        title: res.newTitle,
+        salary: res.newSalary,
+        department_id: dept,
+      });
+      console.log("Role added");
+      start();
+    });
 }
 
 //add employee function
 function addEmployee() {
-  console.log("add employee function called");
+  //console.log("add employee function called");
   start();
 }
 
 //view department function
 function viewDepartment() {
-  console.log("add department function called");
+  //console.log("add department function called");
   start();
 }
 
 //view role function
-function viewRole() {
-  console.log("view role function called");
+function viewRoles() {
+  //console.log("view role function called");
   start();
 }
 
 //view employee function
 function viewEmployees() {
-  console.log("view employees function called");
-  start();
+  //console.log("view employees function called");
+  connection.query(
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name,' ',manager.last_name) AS manager FROM department INNER JOIN role ON department.id = role.department_id INNER JOIN employee ON role.id = employee.role_id LEFT JOIN employee manager ON employee.manager_id = manager.id ORDER BY employee.id ASC",
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        throw err;
+      } else {
+        console.table(res);
+        start();
+      }
+    }
+  );
 }
 
 //update employee role function
 function updateRole() {
-  console.log("update role function called");
+  //console.log("update role function called");
   start();
 }
