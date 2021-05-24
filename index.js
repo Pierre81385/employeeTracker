@@ -148,13 +148,34 @@ function addEmployee() {
 //view department function
 function viewDepartment() {
   //console.log("add department function called");
-  start();
+
+  connection.query(`SELECT * FROM  department`, (err, res) => {
+    if (err) {
+      console.log(err);
+      throw err;
+    } else {
+      console.table(res);
+      start();
+    }
+  });
 }
 
 //view role function
 function viewRoles() {
   //console.log("view role function called");
-  start();
+
+  connection.query(
+    `SELECT role.id, title, name, salary FROM role INNER JOIN department ON role.department_id = department.id ORDER BY id ASC`,
+    function (err, res) {
+      if (err) {
+        console.log(err);
+        throw err;
+      } else {
+        console.table(res);
+        start();
+      }
+    }
+  );
 }
 
 //view employee function
