@@ -50,7 +50,7 @@ function start() {
           addEmployee();
           break;
         case "View Departments":
-          viewDepartment();
+          viewDepartments();
           break;
         case "View Roles":
           viewRoles();
@@ -59,7 +59,7 @@ function start() {
           viewEmployees();
           break;
         case "Update Employee Role":
-          updateEmployee();
+          updateRole();
           break;
         case "Quit":
           console.log("Goodbye!");
@@ -124,9 +124,9 @@ function addRole() {
         ])
         .then((res) => {
           var chosenDepartment;
-          for (var i = 0; i < response.length; i++) {
+          for (var i = 0; i < responseDepartment.length; i++) {
             if (responseDepartment[i].name === res.dept) {
-              chosenDepartment = response[i].id;
+              chosenDepartment = responseDepartment[i].id;
             }
           }
           connection.query("INSERT INTO role SET ?", {
@@ -223,6 +223,17 @@ function addEmployee() {
   });
 }
 
+//view department function
+function viewDepartments() {
+  //console.log("view department function called");
+
+  connection.query(`SELECT * FROM  department`, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    start();
+  });
+}
+
 //view role function
 function viewRoles() {
   //console.log("view role function called");
@@ -253,6 +264,75 @@ function viewEmployees() {
 
 //update employee role function
 function updateRole() {
-  //console.log("update role function called");
-  start();
+  //console.log("update employee role function called");
+
+  connection.query("SELECT * FROM employee", function (err, responseEmployee) {
+    if (err) throw err;
+    connection.query("SELECT * FROM role", function (err, responseRole) {
+      if (err) throw err;
+
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            message: "Which employee would you like to update?",
+            name: "chooseEmployee",
+            choices: function () {
+              var employeeArray = [];
+              for (var i = 0; i < responseEmployee.length; i++) {
+                employeeArray.push(
+                  `${responseEmployee[i].first_name} ${responseEmployee[i].last_name}`
+                );
+              }
+              return employeeArray;
+            },
+          },
+          {
+            type: "list",
+            message: "New Role:",
+            name: "updateRole",
+            choices: function () {
+              var roleArray = [];
+              for (var i = 0; i < responseRole.length; i++) {
+                roleArray.push(responseRole[i].title);
+              }
+              return roleArray;
+            },
+          },
+        ])
+        .then((res) => {
+          let name = res.chooseEmployee.split(" ");
+          let first = name[0];
+          let last = name[1];
+
+          var updateEmployeeRole;
+          for (var i = 0; i < responseRole.length; i++) {
+            if (responseRole[i].title === res.updateRole) {
+              updateEmployeeRole = responseRole[i].id;
+            }
+          }
+          connection.query(
+            "UPDATE employee SET ? WHERE ? AND ?",
+            [
+              {
+                role_id: updateEmployeeRole,
+              },
+              {
+                first_name: first,
+              },
+              {
+                last_name: last,
+              },
+            ],
+
+            function (err, res) {
+              if (err) throw err;
+              console.log("Employee role has been updated.");
+              start();
+              return res;
+            }
+          );
+        });
+    });
+  });
 }
