@@ -19,7 +19,26 @@ connection.connect((err) => {
   }
 });
 
-//user input to select function to runzxza
+// ┌──────  ┌────┬────┐ ┌──────┐ │           │   │  ┌────── ┌─────
+// │        │    │    │ │      │ │ ┌───────┐ │   │  │       │
+// │        │    │    │ │      │ │ │       │ │   │  │       │
+// │        │    │    │ │      │ │ │       │ │   │  │       │
+// │        │    │    │ │      │ │ │       │ │   │  │       │
+// │        │    │    │ │      │ │ │       │ └───┤  │       │
+// ├─       │         │ ├──────┘ │ │       │     │  ├─      ├─
+// │        │         │ │        │ │       │     │  │       │
+// │        │         │ │        │ │       │     │  │       │
+// │        │         │ │        │ │       │     │  │       │
+// │        │         │ │        │ │       │     │  │       │
+// │        │         │ │        │ └───────┘     │  │       │
+// │        │         │ │        │               │  │       │
+// └──────  │         │ │        ├─────┐         │  └────── └─────
+//                    │ │        └─────┘         │
+//                      │
+//  Manangement System v1.0
+
+//user input to select function to run
+//This function is called to start the application, and prompts the user to choose an action.
 function start() {
   //console.log("Start App");
   inquirer
@@ -38,6 +57,7 @@ function start() {
         "Quit",
       ],
     })
+    //recieve the user selection, and call the corresponding function via a switch statement
     .then((res) => {
       switch (res.start) {
         case "Add Department":
@@ -70,6 +90,7 @@ function start() {
 }
 
 //add department function
+//Prompt the user to provide input of the name of the new department, and use SQL INSERT INTO to pass the new department into the database.
 function addDepartment() {
   //console.log("add department function called");
 
@@ -89,7 +110,11 @@ function addDepartment() {
       start();
     });
 }
+
 //add role function
+//Prompt the user to provide input for role title, salary and department.
+//Current department information is retrieved from the database with a select statement, and passed into the function
+//Compare department response with
 function addRole() {
   //console.log("add role function called");
 
